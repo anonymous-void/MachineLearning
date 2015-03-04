@@ -61,31 +61,65 @@ Theta2_grad = zeros(size(Theta2));
 %               the regularization separately and then add them to Theta1_grad
 %               and Theta2_grad from Part 2.
 %
+temp = 0;
+X = [ones(size(X, 1), 1), X];
+z2 = X * Theta1';
+a2 = sigmoid(z2);
 
+a2 = [ones(size(a2, 1), 1), a2];
+z3 = a2 * Theta2';
+a3 = sigmoid(z3);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+h3 = a3;
 
 % -------------------------------------------------------------
 
+ry = eye(num_labels)(y, :);
+cost = ry .* log(a3) + (1 - ry) .* log(1 - a3);
+J = -sum( sum(cost, 2) ) / m;
 % =========================================================================
+regular_append = (lambda/2/m).* ( sum(sum(( Theta1(:, 2:end).^2 ))) + ...
+								sum(sum( Theta2(:, 2:end).^2 )) );
+J = J + regular_append;
 
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
+Delta_1ij = 0;
+Delta_2ij = 0;
+for t=1:m
+	a1 = X(t, :);
+	z2 = a1 * Theta1';
+	a2 = sigmoid(z2);
+	a2 = [1, a2];
+	z3 = a2 * Theta2';
+	a3 = sigmoid(z3);
+	h3 = a3;
 
+	delta_3 = (a3 - ry(t, :));
+% Debug Only
+	% size(delta_3)
+	% size(Theta2)
+	% size(z2)
+	delta_2 = (delta_3 * Theta2)(2:end) .* sigmoidGradient(z2);
+%	delta_2 = delta_2(2:end);	% Remove theta_0
+	% size(delta_2)
+	% size(delta_3)
+
+	Delta_1ij = Delta_1ij + a1' * delta_2;
+	Delta_2ij = Delta_2ij + a2' * delta_3;
+
+end
+%% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! %%
+%% As respect from the programming assignment guide, here shouldn't
+%% be Transpose for Delta_1ij or Delta_2ij, but here I use transpose
+%% just because the guide use (a1,z2,a2...) in col vect convention,
+%% however I use them in row convention, so the gradient need to be
+%% transposed before they are unrolled in var _grad_.
+	Theta1_no_th0 = [zeros(size(Theta1,1), 1), Theta1(:, 2:end)];
+	Theta2_no_th0 = [zeros(size(Theta2,1), 1), Theta2(:, 2:end)];
+	D_1ij = (1/m) * Delta_1ij' + (lambda/m) * Theta1_no_th0;	
+	D_2ij = (1/m) * Delta_2ij'+ (lambda/m) * Theta2_no_th0;
+
+	grad = [D_1ij(:) ; D_2ij(:)];
 
 end
