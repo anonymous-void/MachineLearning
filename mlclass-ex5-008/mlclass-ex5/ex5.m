@@ -30,7 +30,7 @@ fprintf('Loading and Visualizing Data ...\n')
 % Load from ex5data1: 
 % You will have X, y, Xval, yval, Xtest, ytest in your environment
 load ('ex5data1.mat');
-
+whos
 % m = Number of examples
 m = size(X, 1);
 
@@ -48,6 +48,7 @@ pause;
 %
 
 theta = [1 ; 1];
+
 J = linearRegCostFunction([ones(m, 1) X], y, theta, 1);
 
 fprintf(['Cost at theta = [1 ; 1]: %f '...
@@ -103,7 +104,8 @@ pause;
 %  Write Up Note: Since the model is underfitting the data, we expect to
 %                 see a graph with "high bias" -- slide 8 in ML-advice.pdf 
 %
-
+size(X)
+size(Xval)
 lambda = 0;
 [error_train, error_val] = ...
     learningCurve([ones(m, 1) X], y, ...
