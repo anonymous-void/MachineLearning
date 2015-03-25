@@ -31,12 +31,21 @@ fprintf('Finding closest centroids.\n\n');
 % Load an example dataset that we will be using
 load('ex7data2.mat');
 
-% Select an initial set of centroids
+
+% X = magic(8);
+% X = X(:, 2:4);
+% centroids = magic(4);
+% centroids = centroids(:,2:4);
+% findClosestCentroids(X, centroids)
+% pause
+% Settingselect an initial set of centroids
 K = 3; % 3 Centroids
 initial_centroids = [3 3; 6 2; 8 5];
 
 % Find the closest centroids for the examples using the
 % initial_centroids
+% size(X)
+% size(initial_centroids)
 idx = findClosestCentroids(X, initial_centroids);
 
 fprintf('Closest centroids for the first 3 examples: \n')
